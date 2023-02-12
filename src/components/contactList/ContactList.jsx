@@ -1,18 +1,18 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteContact } from 'redux/phonebookSlice';
-import { getContacts, getFilter } from 'redux/selectors';
+import { deleteContact } from 'redux/operation';
+import { selectContacts, selectFilter } from 'redux/selectors';
 import { ContactItem } from 'components/contactItem/ContactItem';
 
 export const ContactList = () => {
-  const contactList = useSelector(getContacts);
-  const contactFilter = useSelector(getFilter);
+  const contactList = useSelector(selectContacts);
+  const contactFilter = useSelector(selectFilter);
 
   const dispatch = useDispatch();
-  const filtredContact = contactList.filter(contact =>
+  const filteredContact = contactList.filter(contact =>
     contact.name.toLowerCase().includes(contactFilter.toLowerCase())
   );
 
-  return filtredContact.map(contact => (
+  return filteredContact.map(contact => (
     <ContactItem
       key={contact.id}
       contact={contact}

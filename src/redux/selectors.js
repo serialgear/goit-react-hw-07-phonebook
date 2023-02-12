@@ -1,3 +1,9 @@
-export const getContacts = state => state.phonebooks.contacts;
+// створюємо селектори для використання в потрібних частинах проекту через useSelector
 
-export const getFilter = state => state.phonebooks.filter;
+export const selectContacts = state => state.contacts.items;
+
+export const selectIsLoading = state => state.contacts.isLoading;
+
+export const selectError = state => state.contacts.error;
+
+export const selectFilter = state => state.filter.filter;

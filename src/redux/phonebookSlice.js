@@ -1,42 +1,48 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchContacts, addContact, deleteContact } from './operation';
 
-const phoneBookInitialState = {
-  contacts: [],
-  filter: '',
+const handlePending = state => {
+  state.isLoading = true;
+};
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
 };
 
 const phoneBookSlice = createSlice({
-  name: 'phonebooks',
-  initialState: phoneBookInitialState,
-  reducers: {
-    formSubmitData(state, action) {
-      const { name, number } = action.payload;
-      state.contacts.push({ id: nanoid(), name, number });
+  name: 'contacts',
+  initialState: {
+    items: [],
+    isLoading: false,
+    error: null,
+  },
+
+  extraReducers: {
+    [fetchContacts.pending]: handlePending,
+    [fetchContacts.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.items = action.payload;
     },
-    deleteContact(state, action) {
-      const index = state.contacts.findIndex(
-        contact => contact.id === action.payload
+    [fetchContacts.rejected]: handleRejected,
+    [addContact.pending]: handlePending,
+    [addContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.items.push(action.payload);
+    },
+    [fetchContacts.rejected]: handleRejected,
+    [deleteContact.pending]: handlePending,
+    [deleteContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      const index = state.items.findIndex(
+        contact => contact.id === action.payload.id
       );
-      state.contacts.splice(index, 1);
-    },
-    filterContacts(state, action) {
-      state.filter = action.payload;
+      state.items.splice(index, 1);
     },
   },
 });
 
-const persistConfig = {
-  key: 'contacts',
-  storage,
-  whitelist: ['contacts'],
-};
-
-export const persistedPhonebookReducer = persistReducer(
-  persistConfig,
-  phoneBookSlice.reducer
-);
-
-export const { formSubmitData, deleteContact, filterContacts } =
-  phoneBookSlice.actions;
+export const contactReducer = phoneBookSlice.reducer;
